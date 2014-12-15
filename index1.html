@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Priv-Chat</title>
+
+
+  <style>
+#chat{
+height:500px;
+}
+#contentWrap{
+display: none;
+}
+#chatWrap{
+float: left;
+border: 1px #000 solid;
+}
+.error{
+color: red;
+}
+.whisper{
+color: gray;
+font-style: italic;
+}
+section{
+	display:block;
+	width:680px;
+	margin-top:15px;
+	float:left;
+	background:#ffffff;
+	border-radius:10px;
+	border:6px solid #1C478E;
+	padding:15px;
+	margin-left:15px;
+}
+
+
+</style>
+</head>
+
+<body>
+<header><h1>Bla</h1></header>
+<section>
+<div id="nickWrap">
+<div style="text-align: center;"></div>
+
+<p style="text-align: center; font-family: Calibri; font-size: 35px;"><span style="font-weight: bold;">PRIV-CHAT</span></p>
+
+<p style="text-align: center;">by Athanasios Karamouzis,
+Kevin Br&uuml;ning, Thomas Leitner</p>
+
+<p></p>
+
+<p>Enter a username to begin:</p>
+
+<p id="nickError"></p>
+
+<form id="setNick"> <input size="35" id="nickname"> <input type="submit">"Join"</form>
+
+</div>
+
+<div id="contentWrap">
+<div id="chatWrap">
+<div id="chat"></div>
+
+<form id="send-message"> <input size="35" id="message"> <input type="submit"> </form>
+
+</div>
+
+<div id="users"></div>
+
+</div>
+</section>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+jQuery(function($){
+var socket = io.connect();
+var $nickForm = $('#setNick');
+var $nickError = $('#nickError');
+var $nickBox = $('#nickname');
+var $users = $('#users');
+var $messageForm = $('#send-message');
+var $messageBox = $('#message');
+var $chat = $('#chat');
+$nickForm.submit(function(e){
+e.preventDefault();
+socket.emit('new user', $nickBox.val(), function(data){
+//Wenn Daten uebergeben werden, dann schliesse den Nickwrap
+if(data){
+$('#nickWrap').hide();
+// und oeffne den Contentwrap
+$('#contentWrap').show();
+} else{
+// wenn keine Daten oder kein gueltiger Name uebergeben wurde
+$nickError.html('That username is already taken! Try again.');
+}
+});
+// Loescht Inhalt der Nickname Eingabe
+$nickBox.val('');
+});
+socket.on('usernames', function(data){
+var html = '';
+//Schreibe Zeilenweise Usernamen ins Usernamenfeld
+for(var i=0; i < data.length; i++){
+html += data[i] + '<br/>'
+}
+$users.html(html);
+});
+$messageForm.submit(function(e){
+e.preventDefault();
+socket.emit('send message', $messageBox.val(), function(data){
+$chat.append('<span class="error">' + data + "</span><br/>");
+});
+$messageBox.val('');
+});
+// Zeige Nachrichten absteigend an
+socket.on('load old msgs', function(docs){
+for(var i=docs.length-1; i >= 0; i--){
+displayMsg(docs[i]);
+}
+});
+socket.on('new message', function(data){
+displayMsg(data);
+});
+function displayMsg(data){
+$chat.append('<span class="msg"><b>' + data.nick + ': </b>' + data.msg + "</span><br/>");
+}
+socket.on('whisper', function(data){
+$chat.append('<span class="whisper"><b>' + data.nick + ': </b>' + data.msg + "</span><br/>");
+});
+});
+</script>
+</body>
+</html>

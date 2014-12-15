@@ -1,0 +1,12 @@
+(Wichtig!)http://blogs.msdn.com/b/cdndevs/archive/2014/09/19/a-chatroom-for-all-part-3-building-a-backend-with-node-mongo-and-socket-io.aspx
+http://socket.io/get-started/chat/
+http://psitsmike.com/2011/10/node-js-and-socket-io-multiroom-chat-tutorial/
+http://www.williammora.com/2013/03/nodejs-tutorial-building-chatroom-with.html
+http://vijayannadi.wordpress.com/tutorials/sample-chat-app-using-nodejs-socketio/
+
+Literatur: 
+The Node Craftsman Book + Digital Chapters (Handling SQL and MongoDB)
+The Node Beginner Book
+
+
+
